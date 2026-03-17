@@ -21,9 +21,10 @@
         }
         .input-box:focus { border-color: #3b82f6; outline: none; background: rgba(2, 6, 23, 1); }
         
-        /* The Green Success State */
+        /* State Transitions */
         .success-bg { background: #10b981 !important; }
-        .success-panel { background: rgba(255, 255, 255, 0.2) !important; border-color: white !important; }
+        .error-bg { background: #ef4444 !important; }
+        .feedback-panel { background: rgba(255, 255, 255, 0.2) !important; border-color: white !important; }
     </style>
 </head>
 <body class="flex items-center justify-center p-6" id="mainBody">
@@ -45,8 +46,9 @@
 
                 <div>
                     <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Membership Number</label>
-                    <input type="text" id="memberId" name="memberId" required placeholder="B-07"
+                    <input type="text" id="memberId" name="memberId" required placeholder="A-01"
                         class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg uppercase">
+                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Format: Letter-Number (e.g. B-07)</p>
                 </div>
 
                 <button type="submit" id="submitBtn"
@@ -57,28 +59,68 @@
         </form>
 
         <div id="msg" class="hidden mt-8 text-center py-4 rounded-2xl bg-white/20 border border-white/40">
-            <p class="text-white font-bold text-xl uppercase tracking-tighter">✓ Entry Recorded!</p>
+            <p id="statusText" class="text-white font-bold text-xl uppercase tracking-tighter"></p>
         </div>
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHIwMkUS1jIltbWQbKzX8oToxCb-Q4izPr5OmId6lUE3x9_ja_h8gSUFyMGH95BVNL/exec";
 
+        function triggerFeedback(isSuccess, message) {
+            const body = document.getElementById('mainBody');
+            const card = document.getElementById('mainCard');
+            const msgBox = document.getElementById('msg');
+            const statusLabel = document.getElementById('statusText');
+
+            const bgClass = isSuccess ? 'success-bg' : 'error-bg';
+            statusLabel.innerText = message;
+
+            // Trigger visual flash
+            body.classList.add(bgClass);
+            card.classList.add('feedback-panel');
+            msgBox.classList.remove('hidden');
+
+            // Trigger Alert Message
+            setTimeout(() => {
+                alert(message.replace('✓ ', '').replace('✗ ', ''));
+            }, 100);
+
+            // Revert screen after 3 seconds
+            setTimeout(() => {
+                body.classList.remove(bgClass);
+                card.classList.remove('feedback-panel');
+                msgBox.classList.add('hidden');
+            }, 3000);
+        }
+
         document.getElementById('gymForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const btn = document.getElementById('submitBtn');
-            const msg = document.getElementById('msg');
-            const body = document.getElementById('mainBody');
-            const card = document.getElementById('mainCard');
-            const memberId = document.getElementById('memberId').value.trim().toUpperCase();
+            const name = document.getElementById('name').value.trim();
+            const memberIdInput = document.getElementById('memberId');
+            const memberId = memberIdInput.value.trim().toUpperCase();
+
+            // 1. TIME RESTRICTION (6 AM to 11 PM)
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour < 6 || hour >= 23) {
+                triggerFeedback(false, "✗ CLOSED: ENTRY ONLY 6AM - 11PM");
+                return;
+            }
+
+            // 2. ID VALIDATION (Alphabet + Hyphen + 2 Digits)
+            const idRegex = /^[A-Z]-[0-9]{2}$/;
+            if (!idRegex.test(memberId)) {
+                triggerFeedback(false, "✗ INVALID ID: USE FORMAT A-01");
+                return;
+            }
             
-            // 1. Check if member already checked in today (Local Validation)
+            // 3. DUPLICATE CHECK (Once per day)
             const today = new Date().toISOString().split('T')[0];
             const lastCheckIn = localStorage.getItem(`checkin_${memberId}`);
-
             if (lastCheckIn === today) {
-                alert("You have already recorded your entry for today!");
+                triggerFeedback(false, "✗ ALREADY CHECKED IN TODAY");
                 return;
             }
             
@@ -87,7 +129,7 @@
             btn.style.opacity = "0.5";
 
             const formData = new FormData();
-            formData.append('name', document.getElementById('name').value);
+            formData.append('name', name);
             formData.append('memberId', memberId);
 
             fetch(SCRIPT_URL, { 
@@ -96,30 +138,18 @@
                 mode: 'no-cors' 
             })
             .then(() => {
-                // Save check-in date for this member
                 localStorage.setItem(`checkin_${memberId}`, today);
-                
                 document.getElementById('gymForm').reset();
                 btn.disabled = false;
                 btn.innerHTML = "RECORD ENTRY";
                 btn.style.opacity = "1";
-
-                // 2. TRIGGER GREEN SCREEN EFFECT
-                body.classList.add('success-bg');
-                card.classList.add('success-panel');
-                msg.classList.remove('hidden');
-
-                // Revert screen after 3 seconds
-                setTimeout(() => { 
-                    body.classList.remove('success-bg');
-                    card.classList.remove('success-panel');
-                    msg.classList.add('hidden');
-                }, 3000);
+                triggerFeedback(true, "✓ ENTRY RECORDED!");
             })
             .catch(error => {
-                alert("Error connecting to Google Sheets. Check internet.");
+                triggerFeedback(false, "✗ SYNC ERROR - CHECK INTERNET");
                 btn.disabled = false;
                 btn.innerHTML = "RECORD ENTRY";
+                btn.style.opacity = "1";
             });
         });
     </script>
