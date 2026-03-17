@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUN FXG Entry Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top right, #1e293b, #020617); color: white; min-height: 100vh; transition: background 0.5s ease; }
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .input-box {
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid #334155;
+            transition: all 0.2s ease;
+        }
+        .input-box:focus { border-color: #3b82f6; outline: none; background: rgba(2, 6, 23, 1); }
+        
+        /* State Transitions */
+        .success-bg { background: #10b981 !important; }
+        .error-bg { background: #ef4444 !important; }
+        .feedback-panel { background: rgba(255, 255, 255, 0.2) !important; border-color: white !important; }
+    </style>
+</head>
+<body class="flex items-center justify-center p-6" id="mainBody">
+
+    <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 transition-all duration-500" id="mainCard">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-black tracking-tighter italic" id="title">SUN FITNESS <span class="text-blue-500" id="subTitle">XPERT GYM</span></h1>
+            <div class="h-1 w-20 bg-blue-600 mx-auto mt-2 rounded-full" id="line"></div>
+            <p class="text-slate-400 text-[10px] uppercase tracking-[0.3em] mt-4 font-bold" id="desc">Entry Form</p>
+        </div>
+
+        <form id="gymForm">
+            <div class="space-y-6">
+                <div>
+                    <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Member Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Ex: Suraj Chandoriya"
+                        class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg">
+                </div>
+
+                <div>
+                    <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Membership Number</label>
+                    <input type="text" id="memberId" name="memberId" required placeholder="A-01"
+                        class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg uppercase">
+                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Format: Letter-Number (e.g. B-07)</p>
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-blue-900/40 transition-all active:scale-95 text-lg tracking-widest">
+                    RECORD ENTRY
+                </button>
+            </div>
+        </form>
+
+        <div id="msg" class="hidden mt-8 text-center py-4 rounded-2xl bg-white/20 border border-white/40">
+            <p id="statusText" class="text-white font-bold text-xl uppercase tracking-tighter"></p>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHIwMkUS1jIltbWQbKzX8oToxCb-Q4izPr5OmId6lUE3x9_ja_h8gSUFyMGH95BVNL/exec";
+
+        function triggerFeedback(isSuccess, message) {
+            const body = document.getElementById('mainBody');
+            const card = document.getElementById('mainCard');
+            const msgBox = document.getElementById('msg');
+            const statusLabel = document.getElementById('statusText');
+
+            const bgClass = isSuccess ? 'success-bg' : 'error-bg';
+            statusLabel.innerText = message;
+
+            // Trigger visual flash
+            body.classList.add(bgClass);
+            card.classList.add('feedback-panel');
+            msgBox.classList.remove('hidden');
+
+            // Trigger Alert Message
+            setTimeout(() => {
+                alert(message.replace('✓ ', '').replace('✗ ', ''));
+            }, 100);
+
+            // Revert screen after 3 seconds
+            setTimeout(() => {
+                body.classList.remove(bgClass);
+                card.classList.remove('feedback-panel');
+                msgBox.classList.add('hidden');
+            }, 3000);
+        }
+
+        document.getElementById('gymForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const name = document.getElementById('name').value.trim();
+            const memberIdInput = document.getElementById('memberId');
+            const memberId = memberIdInput.value.trim().toUpperCase();
+
+            // 1. TIME RESTRICTION (6 AM to 11 PM)
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour < 6 || hour >= 23) {
+                triggerFeedback(false, "✗ CLOSED: ENTRY ONLY 6AM - 11PM");
+                return;
+            }
+
+            // 2. ID VALIDATION (Alphabet + Hyphen + 2 Digits)
+            const idRegex = /^[A-Z]-[0-9]{2}$/;
+            if (!idRegex.test(memberId)) {
+                triggerFeedback(false, "✗ INVALID ID: USE FORMAT A-01");
+                return;
+            }
+            
+            // 3. DUPLICATE CHECK (Once per day)
+            const today = new Date().toISOString().split('T')[0];
+            const lastCheckIn = localStorage.getItem(`checkin_${memberId}`);
+            if (lastCheckIn === today) {
+                triggerFeedback(false, "✗ ALREADY CHECKED IN TODAY");
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = "SYNCING...";
+            btn.style.opacity = "0.5";
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('memberId', memberId);
+
+            fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                body: formData,
+                mode: 'no-cors' 
+            })
+            .then(() => {
+                localStorage.setItem(`checkin_${memberId}`, today);
+                document.getElementById('gymForm').reset();
+                btn.disabled = false;
+                btn.innerHTML = "RECORD ENTRY";
+                btn.style.opacity = "1";
+                triggerFeedback(true, "✓ ENTRY RECORDED!");
+            })
+            .catch(error => {
+                triggerFeedback(false, "✗ SYNC ERROR - CHECK INTERNET");
+                btn.disabled = false;
+                btn.innerHTML = "RECORD ENTRY";
+                btn.style.opacity = "1";
+            });
+        });
+    </script>
+</body>
+</html>
