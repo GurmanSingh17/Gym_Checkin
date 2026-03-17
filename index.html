@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sun Fitness Xpert - Local Entry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top right, #1e293b, #020617); color: white; min-height: 100vh; transition: background 0.5s ease; }
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .input-box {
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid #334155;
+            transition: all 0.2s ease;
+        }
+        .input-box:focus { border-color: #3b82f6; outline: none; background: rgba(2, 6, 23, 1); }
+        
+        /* The Green Success State */
+        .success-bg { background: #10b981 !important; }
+        .success-panel { background: rgba(255, 255, 255, 0.2) !important; border-color: white !important; }
+    </style>
+</head>
+<body class="flex items-center justify-center p-6" id="mainBody">
+
+    <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 transition-all duration-500" id="mainCard">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-black tracking-tighter italic" id="title">SUN FITNESS <span class="text-blue-500" id="subTitle">XPERT GYM</span></h1>
+            <div class="h-1 w-20 bg-blue-600 mx-auto mt-2 rounded-full" id="line"></div>
+            <p class="text-slate-400 text-[10px] uppercase tracking-[0.3em] mt-4 font-bold" id="desc">Local Desk Registration</p>
+        </div>
+
+        <form id="gymForm">
+            <div class="space-y-6">
+                <div>
+                    <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Member Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Ex: Suraj Chandoriya"
+                        class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg">
+                </div>
+
+                <div>
+                    <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Membership Number</label>
+                    <input type="text" id="memberId" name="memberId" required placeholder="B-07"
+                        class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg uppercase">
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-blue-900/40 transition-all active:scale-95 text-lg tracking-widest">
+                    RECORD ENTRY
+                </button>
+            </div>
+        </form>
+
+        <div id="msg" class="hidden mt-8 text-center py-4 rounded-2xl bg-white/20 border border-white/40">
+            <p class="text-white font-bold text-xl uppercase tracking-tighter">✓ Entry Recorded!</p>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHIwMkUS1jIltbWQbKzX8oToxCb-Q4izPr5OmId6lUE3x9_ja_h8gSUFyMGH95BVNL/exec";
+
+        document.getElementById('gymForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const msg = document.getElementById('msg');
+            const body = document.getElementById('mainBody');
+            const card = document.getElementById('mainCard');
+            const memberId = document.getElementById('memberId').value.trim().toUpperCase();
+            
+            // 1. Check if member already checked in today (Local Validation)
+            const today = new Date().toISOString().split('T')[0];
+            const lastCheckIn = localStorage.getItem(`checkin_${memberId}`);
+
+            if (lastCheckIn === today) {
+                alert("You have already recorded your entry for today!");
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = "SYNCING...";
+            btn.style.opacity = "0.5";
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('memberId', memberId);
+
+            fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                body: formData,
+                mode: 'no-cors' 
+            })
+            .then(() => {
+                // Save check-in date for this member
+                localStorage.setItem(`checkin_${memberId}`, today);
+                
+                document.getElementById('gymForm').reset();
+                btn.disabled = false;
+                btn.innerHTML = "RECORD ENTRY";
+                btn.style.opacity = "1";
+
+                // 2. TRIGGER GREEN SCREEN EFFECT
+                body.classList.add('success-bg');
+                card.classList.add('success-panel');
+                msg.classList.remove('hidden');
+
+                // Revert screen after 3 seconds
+                setTimeout(() => { 
+                    body.classList.remove('success-bg');
+                    card.classList.remove('success-panel');
+                    msg.classList.add('hidden');
+                }, 3000);
+            })
+            .catch(error => {
+                alert("Error connecting to Google Sheets. Check internet.");
+                btn.disabled = false;
+                btn.innerHTML = "RECORD ENTRY";
+            });
+        });
+    </script>
+</body>
+</html>
