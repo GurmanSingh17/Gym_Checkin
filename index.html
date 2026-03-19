@@ -46,9 +46,9 @@
 
                 <div>
                     <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Membership Number</label>
-                    <input type="text" id="memberId" name="memberId" required placeholder="A-01"
+                    <input type="text" id="memberId" name="memberId" required placeholder="A-101"
                         class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg uppercase">
-                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Format: Letter-Number (e.g. B-07)</p>
+                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Format: Letter-Number (e.g. B-07 or B-107)</p>
                 </div>
 
                 <button type="submit" id="submitBtn"
@@ -109,10 +109,10 @@
                 return;
             }
 
-            // 2. ID VALIDATION (Alphabet + Hyphen + 2 Digits)
-            const idRegex = /^[A-Z]-[0-9]{2}$/;
+            // 2. ID VALIDATION (Alphabet + Hyphen + 2 to 3 Digits)
+            const idRegex = /^[A-Z]-[0-9]{2,3}$/;
             if (!idRegex.test(memberId)) {
-                triggerFeedback(false, "✗ INVALID ID: USE FORMAT A-01");
+                triggerFeedback(false, "✗ INVALID ID: USE FORMAT A-01 OR A-101");
                 return;
             }
             
