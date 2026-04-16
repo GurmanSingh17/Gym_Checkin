@@ -1,157 +1,433 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUN FXG Entry Form</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Form</title>
     <style>
-        body { font-family: 'Outfit', sans-serif; background: radial-gradient(circle at top right, #1e293b, #020617); color: white; min-height: 100vh; transition: background 0.5s ease; }
-        .glass-panel { 
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      :root {
+        --bg: #f3f7fc;
+        --card: #ffffff;
+        --text: #0f2747;
+        --muted: #5f7189;
+        --line: #d6e0ec;
+        --primary: #167f78;
+        --primary-dark: #126962;
+        --tab-bg: #eef3f9;
+        --secondary: #e9eef5;
+        --danger: #b42318;
+        --shadow: 0 12px 30px rgba(15, 39, 71, 0.08);
+        --radius: 24px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: linear-gradient(180deg, #f7faff 0%, #eef4fb 100%);
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        color: var(--text);
+      }
+
+      .card {
+        width: min(820px, 100%);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 28px;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 2.35rem);
+        line-height: 1.1;
+      }
+
+      .lead {
+        margin: 14px 0 26px;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.55;
+      }
+
+      .tabs {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: var(--tab-bg);
+        margin-bottom: 28px;
+      }
+
+      .tabs-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 28px;
+      }
+
+      .tab {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        padding: 14px 20px;
+        border-radius: 14px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        min-width: 96px;
+      }
+
+      .tab.active {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      .pane {
+        display: none;
+      }
+
+      .pane.active {
+        display: block;
+      }
+
+      .choice-text {
+        margin: 0 0 22px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      form {
+        display: grid;
+        gap: 22px;
+      }
+
+      .field {
+        display: grid;
+        gap: 10px;
+        justify-items: center;
+      }
+
+      label {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 16px;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--text);
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+        background: #fff;
+      }
+
+      input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(22, 127, 120, 0.12);
+      }
+
+      input::placeholder {
+        color: #7d8ea4;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      button[type="submit"],
+      .secondary {
+        border: 0;
+        border-radius: 16px;
+        padding: 16px 24px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      button[type="submit"] {
+        min-width: 200px;
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .secondary {
+        background: var(--secondary);
+        color: var(--text);
+        min-width: 94px;
+      }
+
+      button:disabled {
+        opacity: 0.7;
+        cursor: wait;
+      }
+
+      .status {
+        min-height: 28px;
+        margin-top: 18px;
+        font-weight: 700;
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      .status.success {
+        color: var(--primary-dark);
+      }
+
+      .status.error {
+        color: var(--danger);
+      }
+
+      @media (max-width: 640px) {
+        .card {
+          padding: 22px 18px;
         }
-        .input-box {
-            background: rgba(2, 6, 23, 0.8);
-            border: 1px solid #334155;
-            transition: all 0.2s ease;
+
+        .tabs {
+          width: 100%;
         }
-        .input-box:focus { border-color: #3b82f6; outline: none; background: rgba(2, 6, 23, 1); }
-        
-        /* State Transitions */
-        .success-bg { background: #10b981 !important; }
-        .error-bg { background: #ef4444 !important; }
-        .feedback-panel { background: rgba(255, 255, 255, 0.2) !important; border-color: white !important; }
+
+        .tab {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        button[type="submit"],
+        .secondary {
+          width: 100%;
+        }
+      }
     </style>
-</head>
-<body class="flex items-center justify-center p-6" id="mainBody">
+  </head>
+  <body>
+    <main class="card">
+      <h1>Attendance Form</h1>
+      <p class="lead">
+        First choose entry or exit. Then fill in the details and save.
+      </p>
 
-    <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 transition-all duration-500" id="mainCard">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-black tracking-tighter italic" id="title">SUN FITNESS <span class="text-blue-500" id="subTitle">XPERT GYM</span></h1>
-            <div class="h-1 w-20 bg-blue-600 mx-auto mt-2 rounded-full" id="line"></div>
-            <p class="text-slate-400 text-[10px] uppercase tracking-[0.3em] mt-4 font-bold" id="desc">Entry Form</p>
+      <p class="choice-text">Select attendance type</p>
+
+      <div class="tabs-wrap">
+        <div class="tabs">
+          <button class="tab" type="button" data-tab="entry">Entry</button>
+          <button class="tab" type="button" data-tab="exit">Exit</button>
         </div>
+      </div>
 
-        <form id="gymForm">
-            <div class="space-y-6">
-                <div>
-                    <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Member Full Name</label>
-                    <input type="text" id="name" name="name" required placeholder="Ex: Suraj Chandoriya"
-                        class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg">
-                </div>
+      <section class="pane" id="pane-entry">
+        <form id="entryForm">
+          <div class="field">
+            <label for="entryName">Member Name</label>
+            <input
+              id="entryName"
+              name="name"
+              type="text"
+              placeholder="Enter member name"
+              required
+            />
+          </div>
 
-                <div>
-                    <label class="text-slate-400 text-xs font-bold uppercase mb-2 block ml-1">Membership Number</label>
-                    <input type="text" id="memberId" name="memberId" required placeholder="A-101"
-                        class="input-box w-full px-6 py-4 rounded-2xl text-white text-lg uppercase">
-                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Format: Letter-Number (e.g. B-07 or B-107)</p>
-                </div>
+          <div class="field">
+            <label for="entryMembership">Membership Number</label>
+            <input
+              id="entryMembership"
+              name="membershipNo"
+              type="text"
+              placeholder="Enter membership number"
+              required
+            />
+          </div>
 
-                <button type="submit" id="submitBtn"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-blue-900/40 transition-all active:scale-95 text-lg tracking-widest">
-                    RECORD ENTRY
-                </button>
-            </div>
+          <div class="actions">
+            <button type="submit" id="entrySubmit">Save Entry</button>
+            <button type="button" class="secondary" id="entryReset">
+              Clear
+            </button>
+          </div>
         </form>
+      </section>
 
-        <div id="msg" class="hidden mt-8 text-center py-4 rounded-2xl bg-white/20 border border-white/40">
-            <p id="statusText" class="text-white font-bold text-xl uppercase tracking-tighter"></p>
-        </div>
-    </div>
+      <section class="pane" id="pane-exit">
+        <form id="exitForm">
+          <div class="field">
+            <label for="exitMembership">Membership Number</label>
+            <input
+              id="exitMembership"
+              name="membershipNo"
+              type="text"
+              placeholder="Enter membership number for exit"
+              required
+            />
+          </div>
+
+          <div class="actions">
+            <button type="submit" id="exitSubmit">Save Exit</button>
+            <button type="button" class="secondary" id="exitReset">
+              Clear
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <div id="statusMessage" class="status" aria-live="polite"></div>
+    </main>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHIwMkUS1jIltbWQbKzX8oToxCb-Q4izPr5OmId6lUE3x9_ja_h8gSUFyMGH95BVNL/exec";
+      const APPS_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyYf7jWMFBfVS9KTn5z69fHhXF1pOmIGJeiwfEu5kNTYLrFk8bsScBCt4r_o2_--HJw/exec";
 
-        function triggerFeedback(isSuccess, message) {
-            const body = document.getElementById('mainBody');
-            const card = document.getElementById('mainCard');
-            const msgBox = document.getElementById('msg');
-            const statusLabel = document.getElementById('statusText');
+      const tabs = document.querySelectorAll(".tab");
+      const panes = {
+        entry: document.getElementById("pane-entry"),
+        exit: document.getElementById("pane-exit"),
+      };
 
-            const bgClass = isSuccess ? 'success-bg' : 'error-bg';
-            statusLabel.innerText = message;
+      const entryForm = document.getElementById("entryForm");
+      const exitForm = document.getElementById("exitForm");
+      const entrySubmit = document.getElementById("entrySubmit");
+      const exitSubmit = document.getElementById("exitSubmit");
+      const statusMessage = document.getElementById("statusMessage");
 
-            // Trigger visual flash
-            body.classList.add(bgClass);
-            card.classList.add('feedback-panel');
-            msgBox.classList.remove('hidden');
+      function setStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = `status ${type || ""}`.trim();
+      }
 
-            // Trigger Alert Message
-            setTimeout(() => {
-                alert(message.replace('✓ ', '').replace('✗ ', ''));
-            }, 100);
+      function switchTab(tabName) {
+        tabs.forEach((button) => {
+          button.classList.toggle("active", button.dataset.tab === tabName);
+        });
 
-            // Revert screen after 3 seconds
-            setTimeout(() => {
-                body.classList.remove(bgClass);
-                card.classList.remove('feedback-panel');
-                msgBox.classList.add('hidden');
-            }, 3000);
+        Object.entries(panes).forEach(([name, pane]) => {
+          pane.classList.toggle("active", name === tabName);
+        });
+
+        if (tabName === "entry") {
+          document.getElementById("entryName").focus();
+        } else {
+          document.getElementById("exitMembership").focus();
         }
 
-        document.getElementById('gymForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const btn = document.getElementById('submitBtn');
-            const name = document.getElementById('name').value.trim();
-            const memberIdInput = document.getElementById('memberId');
-            const memberId = memberIdInput.value.trim().toUpperCase();
+        setStatus("", "");
+      }
 
-            // 1. TIME RESTRICTION (6 AM to 11 PM)
-            const now = new Date();
-            const hour = now.getHours();
-            if (hour < 6 || hour >= 23) {
-                triggerFeedback(false, "✗ CLOSED: ENTRY ONLY 6AM - 11PM");
-                return;
-            }
-
-            // 2. ID VALIDATION (Alphabet + Hyphen + 2 to 3 Digits)
-            const idRegex = /^[A-Z]-[0-9]{2,3}$/;
-            if (!idRegex.test(memberId)) {
-                triggerFeedback(false, "✗ INVALID ID: USE FORMAT A-01 OR A-101");
-                return;
-            }
-            
-            // 3. DUPLICATE CHECK (Once per day)
-            const today = new Date().toISOString().split('T')[0];
-            const lastCheckIn = localStorage.getItem(`checkin_${memberId}`);
-            if (lastCheckIn === today) {
-                triggerFeedback(false, "✗ ALREADY CHECKED IN TODAY");
-                return;
-            }
-            
-            btn.disabled = true;
-            btn.innerHTML = "SYNCING...";
-            btn.style.opacity = "0.5";
-
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('memberId', memberId);
-
-            fetch(SCRIPT_URL, { 
-                method: 'POST', 
-                body: formData,
-                mode: 'no-cors' 
-            })
-            .then(() => {
-                localStorage.setItem(`checkin_${memberId}`, today);
-                document.getElementById('gymForm').reset();
-                btn.disabled = false;
-                btn.innerHTML = "RECORD ENTRY";
-                btn.style.opacity = "1";
-                triggerFeedback(true, "✓ ENTRY RECORDED!");
-            })
-            .catch(error => {
-                triggerFeedback(false, "✗ SYNC ERROR - CHECK INTERNET");
-                btn.disabled = false;
-                btn.innerHTML = "RECORD ENTRY";
-                btn.style.opacity = "1";
-            });
+      async function postData(payload) {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(payload),
         });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Unable to save data.");
+        }
+
+        return data;
+      }
+
+      entryForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(entryForm);
+        const name = String(formData.get("name") || "").trim();
+        const membershipNo = String(formData.get("membershipNo") || "").trim();
+
+        if (!name || !membershipNo) {
+          setStatus(
+            "Please enter both member name and membership number.",
+            "error",
+          );
+          return;
+        }
+
+        entrySubmit.disabled = true;
+        setStatus("Saving entry...", "");
+
+        try {
+          const result = await postData({
+            action: "entry",
+            name,
+            membershipNo,
+          });
+          entryForm.reset();
+          setStatus(result.message || "Entry saved successfully.", "success");
+        } catch (error) {
+          setStatus(error.message || "Entry could not be saved.", "error");
+        } finally {
+          entrySubmit.disabled = false;
+        }
+      });
+
+      exitForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(exitForm);
+        const membershipNo = String(formData.get("membershipNo") || "").trim();
+
+        if (!membershipNo) {
+          setStatus("Please enter the membership number for exit.", "error");
+          return;
+        }
+
+        exitSubmit.disabled = true;
+        setStatus("Saving exit...", "");
+
+        try {
+          const result = await postData({ action: "exit", membershipNo });
+          exitForm.reset();
+          setStatus(result.message || "Exit saved successfully.", "success");
+        } catch (error) {
+          setStatus(error.message || "Exit could not be saved.", "error");
+        } finally {
+          exitSubmit.disabled = false;
+        }
+      });
+
+      document.getElementById("entryReset").addEventListener("click", () => {
+        entryForm.reset();
+        setStatus("", "");
+      });
+
+      document.getElementById("exitReset").addEventListener("click", () => {
+        exitForm.reset();
+        setStatus("", "");
+      });
+
+      tabs.forEach((button) => {
+        button.addEventListener("click", () => switchTab(button.dataset.tab));
+      });
+
+      setStatus("Please choose Entry or Exit to continue.", "");
     </script>
-</body>
+  </body>
 </html>
+
