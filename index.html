@@ -3,430 +3,645 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Attendance Form</title>
+    <title>Sun Fitness Xpert - Gym Manager</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
       :root {
-        --bg: #f3f7fc;
-        --card: #ffffff;
-        --text: #0f2747;
-        --muted: #5f7189;
-        --line: #d6e0ec;
-        --primary: #167f78;
-        --primary-dark: #126962;
-        --tab-bg: #eef3f9;
-        --secondary: #e9eef5;
-        --danger: #b42318;
-        --shadow: 0 12px 30px rgba(15, 39, 71, 0.08);
-        --radius: 24px;
-      }
-
-      * {
-        box-sizing: border-box;
+        --primary: #1a2a6c;
+        --whatsapp: #25d366;
+        --bg: #f4f7f6;
+        --danger: #e74c3c;
+        --info: #3498db;
+        --success: #27ae60;
+        --sheet: #1d6f42;
+        --pdf: #c0392b;
       }
 
       body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
         margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 16px;
-        background: linear-gradient(180deg, #f7faff 0%, #eef4fb 100%);
-        font-family: "Segoe UI", Tahoma, sans-serif;
-        color: var(--text);
+        padding: 10px;
       }
 
-      .card {
-        width: min(820px, 100%);
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 28px;
-        text-align: center;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: clamp(2rem, 3vw, 2.35rem);
-        line-height: 1.1;
-      }
-
-      .lead {
-        margin: 14px 0 26px;
-        color: var(--muted);
-        font-size: 1.05rem;
-        line-height: 1.55;
+      .container {
+        max-width: 1400px;
+        margin: auto;
       }
 
       .tabs {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px;
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        background: var(--tab-bg);
-        margin-bottom: 28px;
-      }
-
-      .tabs-wrap {
         display: flex;
-        justify-content: center;
-        margin-bottom: 28px;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
 
       .tab {
-        border: 0;
-        background: transparent;
-        color: var(--muted);
-        padding: 14px 20px;
-        border-radius: 14px;
+        flex: 1;
+        padding: 15px;
+        text-align: center;
         cursor: pointer;
-        font: inherit;
-        font-size: 1rem;
-        font-weight: 700;
-        min-width: 96px;
+        font-weight: bold;
+        color: #888;
+        transition: 0.3s;
       }
 
       .tab.active {
         background: var(--primary);
-        color: #ffffff;
+        color: white;
       }
 
-      .pane {
-        display: none;
+      .card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
       }
 
-      .pane.active {
-        display: block;
-      }
-
-      .choice-text {
-        margin: 0 0 22px;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--text);
-      }
-
-      form {
-        display: grid;
-        gap: 22px;
-      }
-
-      .field {
-        display: grid;
-        gap: 10px;
-        justify-items: center;
-      }
-
-      label {
-        font-size: 1rem;
-        font-weight: 700;
-      }
-
-      input {
+      input,
+      select,
+      button {
         width: 100%;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 18px 16px;
-        font: inherit;
-        font-size: 1rem;
-        color: var(--text);
-        outline: none;
-        transition:
-          border-color 0.2s ease,
-          box-shadow 0.2s ease;
-        background: #fff;
+        padding: 12px;
+        margin: 8px 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 16px;
       }
 
-      input:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(22, 127, 120, 0.12);
-      }
-
-      input::placeholder {
-        color: #7d8ea4;
-      }
-
-      .actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      button[type="submit"],
-      .secondary {
-        border: 0;
-        border-radius: 16px;
-        padding: 16px 24px;
-        cursor: pointer;
-        font: inherit;
-        font-size: 1rem;
-        font-weight: 700;
-      }
-
-      button[type="submit"] {
-        min-width: 200px;
+      button {
         background: var(--primary);
-        color: #fff;
-      }
-
-      .secondary {
-        background: var(--secondary);
-        color: var(--text);
-        min-width: 94px;
+        color: white;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
       }
 
       button:disabled {
-        opacity: 0.7;
-        cursor: wait;
+        background: #ccc;
+        cursor: not-allowed;
       }
 
-      .status {
-        min-height: 28px;
-        margin-top: 18px;
-        font-weight: 700;
-        font-size: 1rem;
+      .hidden {
+        display: none;
+      }
+
+      .month-nav {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 10px 0;
+        margin-bottom: 15px;
+        scrollbar-width: none;
+      }
+
+      .month-pill {
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 8px 18px;
+        border-radius: 20px;
+        cursor: pointer;
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .month-pill.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .scroll-table {
+        overflow-x: auto;
+        max-height: 450px;
+        border-radius: 8px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        background: white;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      th {
+        background: #f8f9fa;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        color: var(--primary);
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      .badge-today {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #991b1b;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      .btn-action {
+        width: auto;
+        padding: 6px 12px;
+        font-size: 11px;
+        border-radius: 4px;
+        border: none;
+        color: white;
+        cursor: pointer;
+        margin-right: 2px;
+      }
+
+      #id-warning {
+        color: var(--danger);
+        font-size: 11px;
+        font-weight: bold;
+        display: none;
+        margin-bottom: 5px;
+      }
+
+      .btn-pdf {
+        background-color: var(--pdf) !important;
+        margin-bottom: 10px;
+      }
+
+      .admin-subtabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .admin-subtab {
+        width: auto;
+        padding: 10px 18px;
+        background: #e2e8f0;
+        color: #334155;
+        border-radius: 999px;
+      }
+
+      .admin-subtab.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .summary-box {
+        background: #f0f4ff;
+        padding: 15px;
+        border-radius: 10px;
         text-align: center;
       }
 
-      .status.success {
-        color: var(--primary-dark);
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
       }
 
-      .status.error {
-        color: var(--danger);
+      .muted-note {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: -2px;
+        margin-bottom: 10px;
       }
 
-      @media (max-width: 640px) {
-        .card {
-          padding: 22px 18px;
-        }
+      .link-btn {
+        color: var(--info);
+        font-weight: bold;
+        text-decoration: none;
+      }
 
-        .tabs {
-          width: 100%;
-        }
+      .danger-btn {
+        background: var(--danger);
+      }
 
-        .tab {
-          flex: 1;
-          min-width: 0;
-        }
+      .renewal-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
 
-        .actions {
-          flex-direction: column;
-        }
+      .renewal-picker {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        width: 1px;
+        height: 1px;
+      }
 
-        button[type="submit"],
-        .secondary {
-          width: 100%;
+      .renewal-date-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        background: #fff;
+      }
+
+      .renewal-current-date {
+        font-weight: 800;
+        color: var(--primary);
+        min-width: 120px;
+      }
+
+      .calendar-btn {
+        width: auto;
+        margin: 0;
+        padding: 8px 10px;
+        background: #fff;
+        color: #111827;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
   </head>
+
   <body>
-    <main class="card">
-      <h1>Attendance Form</h1>
-      <p class="lead">
-        First choose entry or exit. Then fill in the details and save.
-      </p>
-
-      <p class="choice-text">Select attendance type</p>
-
-      <div class="tabs-wrap">
-        <div class="tabs">
-          <button class="tab" type="button" data-tab="entry">Entry</button>
-          <button class="tab" type="button" data-tab="exit">Exit</button>
+    <div class="container">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('reg')" id="t-reg">
+          Registration Desk
+        </div>
+        <div class="tab" onclick="switchTab('admin')" id="t-admin">
+          Admin Analytics
         </div>
       </div>
 
-      <section class="pane" id="pane-entry">
-        <form id="entryForm">
-          <div class="field">
-            <label for="entryName">Member Name</label>
-            <input
-              id="entryName"
-              name="name"
-              type="text"
-              placeholder="Enter member name"
+      <div id="regView" class="card">
+        <h2 id="formTitle">Register / Re-joining</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+          <div>
+            <label style="font-size: 11px; font-weight: bold">Date *</label
+            ><input
+              type="date"
+              id="date"
+              onchange="updateExpiryPreview()"
               required
             />
           </div>
-
-          <div class="field">
-            <label for="entryMembership">Membership Number</label>
+          <div>
+            <label style="font-size: 11px; font-weight: bold">ID *</label>
             <input
-              id="entryMembership"
-              name="membershipNo"
               type="text"
-              placeholder="Enter membership number"
+              id="memNo"
+              oninput="checkDuplicateID()"
               required
             />
+            <div id="id-warning">⚠️ ID assigned!</div>
           </div>
+        </div>
+        <input type="text" id="name" placeholder="Full Name" required />
+        <input
+          type="text"
+          id="contact"
+          placeholder="WhatsApp Number"
+          required
+        />
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+          <select id="package" onchange="updateExpiryPreview()" required>
+            <option value="">-- Choose Package --</option>
+            <option value="1">1 Month</option>
+            <option value="3">3 Months</option>
+            <option value="6">6 Months</option>
+            <option value="12">12 Months</option>
+          </select>
+          <select id="payMode" required>
+            <option value="">-- Payment Mode --</option>
+            <option value="Cash">Cash</option>
+            <option value="Online">Online</option>
+          </select>
+        </div>
+        <input type="number" id="amt" placeholder="Fee Amount (₹)" required />
+        <div
+          id="expiryPreview"
+          style="
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+            background: #eef2ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px dashed var(--primary);
+          "
+        ></div>
+        <button onclick="saveToCloud()" id="saveBtn">Save Record</button>
+        <button
+          onclick="resetForm()"
+          style="background: #64748b; margin-top: 5px"
+        >
+          Clear Form
+        </button>
+        <p id="status" style="text-align: center; font-weight: bold"></p>
 
-          <div class="actions">
-            <button type="submit" id="entrySubmit">Save Entry</button>
-            <button type="button" class="secondary" id="entryReset">
-              Clear
+        <div
+          id="renewalDeskPanel"
+          style="
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 10px;
+              margin-bottom: 10px;
+              flex-wrap: wrap;
+            "
+          >
+            <h3 style="color: #9b2c2c; margin: 0">Upcoming Renewals</h3>
+            <div class="renewal-toolbar">
+              <input
+                type="date"
+                id="reminderDatePicker"
+                class="renewal-picker"
+                onchange="changeReminderDateFromPicker()"
+              />
+              <div class="renewal-date-chip">
+                <span id="todayDateLabel" class="renewal-current-date"></span>
+                <button
+                  type="button"
+                  class="calendar-btn"
+                  onclick="openReminderCalendar()"
+                  aria-label="Choose renewal date"
+                >
+                  📅
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="scroll-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>ID</th>
+                  <th>Expiry</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="publicAlertBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="adminView" class="hidden">
+        <div class="card">
+          <div class="admin-subtabs">
+            <button
+              class="admin-subtab active"
+              id="adminAnalyticsTab"
+              onclick="switchAdminSection('analytics')"
+            >
+              Income Analytics
+            </button>
+            <button
+              class="admin-subtab"
+              id="adminExpensesTab"
+              onclick="switchAdminSection('expenses')"
+            >
+              Expense Records
             </button>
           </div>
-        </form>
-      </section>
 
-      <section class="pane" id="pane-exit">
-        <form id="exitForm">
-          <div class="field">
-            <label for="exitMembership">Membership Number</label>
-            <input
-              id="exitMembership"
-              name="membershipNo"
-              type="text"
-              placeholder="Enter membership number for exit"
-              required
-            />
-          </div>
-
-          <div class="actions">
-            <button type="submit" id="exitSubmit">Save Exit</button>
-            <button type="button" class="secondary" id="exitReset">
-              Clear
+          <div id="analyticsSection">
+            <button
+              onclick="
+                window.open(
+                  'https://docs.google.com/spreadsheets/d/1cw5kQx5Igj8fePRIk-QC2PuU-QYCWo63JpCPh00n9mw/edit?usp=sharing',
+                  '_blank',
+                )
+              "
+              style="background-color: var(--sheet); margin-bottom: 10px"
+            >
+              View Google Sheet (Cloud Database)
             </button>
+            <button onclick="downloadRenewalPDF()" class="btn-pdf">
+              Download Monthly Renewal List (PDF)
+            </button>
+
+            <div class="summary-grid">
+              <div class="summary-box">
+                <span id="monthNameLabel">Month</span> Total<br /><b
+                  id="monthCol"
+                  style="color: green; font-size: 22px"
+                  >Rs. 0</b
+                >
+              </div>
+              <div class="summary-box">
+                Today's Total<br /><b
+                  id="todayCol"
+                  style="color: #1a2a6c; font-size: 22px"
+                  >Rs. 0</b
+                >
+              </div>
+            </div>
+
+            <div class="month-nav" id="monthNav"></div>
+
+            <input
+              type="text"
+              id="search"
+              placeholder="Search by name or ID..."
+              onkeyup="renderAdmin()"
+              style="margin-bottom: 15px; border: 2px solid var(--primary)"
+            />
+            <div class="scroll-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>ID</th>
+                    <th>Pkg</th>
+                    <th>Amt</th>
+                    <th>Contact</th>
+                    <th>Expiry</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="memberListBody"></tbody>
+              </table>
+            </div>
           </div>
-        </form>
-      </section>
 
-      <div id="statusMessage" class="status" aria-live="polite"></div>
-    </main>
+          <div id="expensesSection" class="hidden">
+            <div class="form-grid">
+              <div>
+                <label style="font-size: 11px; font-weight: bold"
+                  >Expense Date *</label
+                >
+                <input type="date" id="expenseDate" />
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: bold"
+                  >Amount (Rs.) *</label
+                >
+                <input
+                  type="number"
+                  id="expenseAmount"
+                  placeholder="Expense Amount"
+                />
+              </div>
+            </div>
 
-    <script>
-      const APPS_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbyYf7jWMFBfVS9KTn5z69fHhXF1pOmIGJeiwfEu5kNTYLrFk8bsScBCt4r_o2_--HJw/exec";
+            <div class="form-grid">
+              <div>
+                <label style="font-size: 11px; font-weight: bold"
+                  >Expense Head *</label
+                >
+                <input
+                  type="text"
+                  id="expenseTitle"
+                  placeholder="Electricity Bill / Equipment / Cleaning"
+                />
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: bold"
+                  >Payment Mode *</label
+                >
+                <select id="expensePayMode">
+                  <option value="">-- Payment Mode --</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Online">Online</option>
+                  <option value="Card">Card</option>
+                  <option value="UPI">UPI</option>
+                </select>
+              </div>
+            </div>
 
-      const tabs = document.querySelectorAll(".tab");
-      const panes = {
-        entry: document.getElementById("pane-entry"),
-        exit: document.getElementById("pane-exit"),
-      };
+            <div class="form-grid">
+              <div>
+                <label style="font-size: 11px; font-weight: bold"
+                  >Category</label
+                >
+                <select id="expenseCategory">
+                  <option value="General">General</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Utilities">Utilities</option>
+                  <option value="Maintenance">Maintenance</option>
+                  <option value="Equipment">Equipment</option>
+                  <option value="Staff">Staff</option>
+                  <option value="Marketing">Marketing</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: bold"
+                  >Upload Bill</label
+                >
+                <input type="file" id="expenseBill" accept="image/*,.pdf" />
+              </div>
+            </div>
 
-      const entryForm = document.getElementById("entryForm");
-      const exitForm = document.getElementById("exitForm");
-      const entrySubmit = document.getElementById("entrySubmit");
-      const exitSubmit = document.getElementById("exitSubmit");
-      const statusMessage = document.getElementById("statusMessage");
+            <div class="muted-note">
+              Bill upload is optional. Uploaded bills are currently stored only
+              in this browser.
+            </div>
 
-      function setStatus(message, type) {
-        statusMessage.textContent = message;
-        statusMessage.className = `status ${type || ""}`.trim();
-      }
+            <button onclick="saveExpense()">Save Expense</button>
+            <button
+              onclick="resetExpenseForm()"
+              style="background: #64748b; margin-top: 5px"
+            >
+              Clear Expense Form
+            </button>
+            <p
+              id="expenseStatus"
+              style="text-align: center; font-weight: bold"
+            ></p>
 
-      function switchTab(tabName) {
-        tabs.forEach((button) => {
-          button.classList.toggle("active", button.dataset.tab === tabName);
-        });
+            <div class="summary-grid">
+              <div class="summary-box">
+                <span id="expenseMonthNameLabel">Month</span> Expense<br /><b
+                  id="expenseMonthTotal"
+                  style="color: var(--danger); font-size: 22px"
+                  >Rs. 0</b
+                >
+              </div>
+              <div class="summary-box">
+                Today's Expense<br /><b
+                  id="expenseTodayTotal"
+                  style="color: #b45309; font-size: 22px"
+                  >Rs. 0</b
+                >
+              </div>
+              <div class="summary-box">
+                Net Collection<br /><b
+                  id="netCollectionTotal"
+                  style="color: var(--success); font-size: 22px"
+                  >Rs. 0</b
+                >
+              </div>
+            </div>
 
-        Object.entries(panes).forEach(([name, pane]) => {
-          pane.classList.toggle("active", name === tabName);
-        });
+            <div class="month-nav" id="expenseMonthNav"></div>
+            <input
+              type="text"
+              id="expenseSearch"
+              placeholder="Search expense head or category..."
+              onkeyup="renderExpenses()"
+              style="margin-bottom: 15px; border: 2px solid var(--danger)"
+            />
+            <div class="scroll-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Head</th>
+                    <th>Category</th>
+                    <th>Mode</th>
+                    <th>Amount</th>
+                    <th>Bill</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expenseListBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        if (tabName === "entry") {
-          document.getElementById("entryName").focus();
-        } else {
-          document.getElementById("exitMembership").focus();
-        }
-
-        setStatus("", "");
-      }
-
-      async function postData(payload) {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        const data = await response.json();
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || "Unable to save data.");
-        }
-
-        return data;
-      }
-
-      entryForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(entryForm);
-        const name = String(formData.get("name") || "").trim();
-        const membershipNo = String(formData.get("membershipNo") || "").trim();
-
-        if (!name || !membershipNo) {
-          setStatus(
-            "Please enter both member name and membership number.",
-            "error",
-          );
-          return;
-        }
-
-        entrySubmit.disabled = true;
-        setStatus("Saving entry...", "");
-
-        try {
-          const result = await postData({
-            action: "entry",
-            name,
-            membershipNo,
-          });
-          entryForm.reset();
-          setStatus(result.message || "Entry saved successfully.", "success");
-        } catch (error) {
-          setStatus(error.message || "Entry could not be saved.", "error");
-        } finally {
-          entrySubmit.disabled = false;
-        }
-      });
-
-      exitForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(exitForm);
-        const membershipNo = String(formData.get("membershipNo") || "").trim();
-
-        if (!membershipNo) {
-          setStatus("Please enter the membership number for exit.", "error");
-          return;
-        }
-
-        exitSubmit.disabled = true;
-        setStatus("Saving exit...", "");
-
-        try {
-          const result = await postData({ action: "exit", membershipNo });
-          exitForm.reset();
-          setStatus(result.message || "Exit saved successfully.", "success");
-        } catch (error) {
-          setStatus(error.message || "Exit could not be saved.", "error");
-        } finally {
-          exitSubmit.disabled = false;
-        }
-      });
-
-      document.getElementById("entryReset").addEventListener("click", () => {
-        entryForm.reset();
-        setStatus("", "");
-      });
-
-      document.getElementById("exitReset").addEventListener("click", () => {
-        exitForm.reset();
-        setStatus("", "");
-      });
-
-      tabs.forEach((button) => {
-        button.addEventListener("click", () => switchTab(button.dataset.tab));
-      });
-
-      setStatus("Please choose Entry or Exit to continue.", "");
-    </script>
+    <script src="./app.js"></script>
   </body>
 </html>
