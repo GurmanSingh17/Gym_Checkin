@@ -2,402 +2,215 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f3f7fc" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sun Fitness Xpert Gym Daily Attendance</title>
     <style>
       :root {
         --bg: #f3f7fc;
         --card: #fff;
-        --text: #102a4c;
-        --muted: #62748b;
-        --line: #d9e3ef;
-        --primary: #157e78;
-        --primary-hover: #116760;
-        --soft: #edf3fa;
-        --danger: #b42318;
-        --success: #126b48;
-        --radius: 22px;
+        --text: #10294a;
+        --muted: #61748c;
+        --line: #d8e3f0;
+        --primary: #16847d;
+        --primary-dark: #126b65;
+        --secondary: #e9eef5;
+        --danger: #c52b20;
+        --shadow: 0 12px 30px rgba(15, 39, 71, .08);
       }
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; }
       body {
-        min-height: 100vh;
         margin: 0;
-        padding: 18px;
+        min-height: 100vh;
         display: grid;
         place-items: center;
-        background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+        padding: 16px;
+        background: linear-gradient(180deg, #f7faff 0%, #eef4fb 100%);
+        font-family: "Segoe UI", Tahoma, sans-serif;
         color: var(--text);
-        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
       }
-      main {
+      .card {
         width: min(820px, 100%);
-        padding: clamp(24px, 5vw, 38px);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
+        padding: 38px 36px 30px;
         background: var(--card);
-        box-shadow: 0 14px 36px rgba(16, 42, 76, 0.09);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
         text-align: center;
       }
-      h1 {
-        margin: 0;
-        font-size: clamp(1.8rem, 5vw, 2.45rem);
-        line-height: 1.12;
-      }
-      .intro {
-        margin: 12px 0 28px;
-        color: var(--muted);
-        line-height: 1.5;
-      }
-      .type-label {
-        margin: 0 0 14px;
-        font-weight: 700;
-      }
+      h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.35rem); line-height: 1.15; }
+      .lead { margin: 12px 0 30px; color: var(--muted); font-size: 1.02rem; }
+      .choice-text, label { font-weight: 700; }
+      .choice-text { margin: 0 0 14px; }
+      .tabs-wrap { display: flex; justify-content: center; margin-bottom: 30px; }
       .tabs {
         display: inline-flex;
         gap: 8px;
-        margin: 0 0 30px;
         padding: 7px;
         border: 1px solid var(--line);
-        border-radius: 18px;
-        background: var(--soft);
+        border-radius: 19px;
+        background: #eef3f9;
       }
       .tab {
         min-width: 100px;
         padding: 13px 20px;
         border: 0;
-        border-radius: 13px;
+        border-radius: 14px;
         background: transparent;
         color: var(--muted);
+        cursor: pointer;
         font: inherit;
         font-weight: 700;
-        cursor: pointer;
       }
-      .tab[aria-selected="true"] {
-        background: var(--primary);
-        color: #fff;
-      }
-      .pane {
-        display: none;
-      }
-      .pane.active {
-        display: block;
-      }
-      form {
-        display: grid;
-        gap: 21px;
-      }
-      .field {
-        display: grid;
-        gap: 9px;
-      }
-      label {
-        font-weight: 700;
-      }
+      .tab.active { background: var(--primary); color: #fff; }
+      .pane { display: none; }
+      .pane.active { display: block; }
+      form { display: grid; gap: 22px; }
+      .field { display: grid; gap: 10px; }
+      label { font-size: 1rem; }
       input {
         width: 100%;
-        min-height: 58px;
-        padding: 15px 16px;
+        padding: 17px 16px;
         border: 1px solid var(--line);
-        border-radius: 16px;
-        background: #f9fbfe;
+        border-radius: 17px;
+        background: #e8f0fd;
         color: var(--text);
         font: inherit;
         font-size: 1rem;
+        outline: none;
       }
-      input:focus {
-        outline: 3px solid rgba(21, 126, 120, 0.17);
-        border-color: var(--primary);
-        background: #fff;
-      }
-      .actions {
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 2px;
-      }
-      button.submit,
-      button.clear {
-        min-height: 54px;
-        padding: 14px 24px;
+      input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(22, 132, 125, .12); }
+      .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 1px; }
+      button[type="submit"], .secondary {
+        padding: 16px 24px;
         border: 0;
-        border-radius: 15px;
+        border-radius: 16px;
+        cursor: pointer;
         font: inherit;
         font-weight: 700;
-        cursor: pointer;
       }
-      button.submit {
-        min-width: 200px;
-        background: var(--primary);
-        color: white;
-      }
-      button.submit:hover {
-        background: var(--primary-hover);
-      }
-      button.clear {
-        min-width: 96px;
-        background: #e9eef5;
-        color: var(--text);
-      }
-      button:disabled {
-        opacity: 0.65;
-        cursor: wait;
-      }
-      #status {
-        min-height: 26px;
-        margin: 18px 0 0;
-        font-weight: 700;
-        overflow-wrap: anywhere;
-      }
-      #status.error {
-        color: var(--danger);
-      }
-      #status.success {
-        color: var(--success);
-      }
-      @media (max-width: 560px) {
-        body {
-          padding: 10px;
-        }
-        main {
-          padding: 24px 17px;
-        }
-        .tabs {
-          display: flex;
-          width: 100%;
-        }
-        .tab {
-          flex: 1;
-          min-width: 0;
-        }
-        .actions {
-          flex-direction: column;
-        }
-        button.submit,
-        button.clear {
-          width: 100%;
-        }
+      button[type="submit"] { min-width: 200px; background: var(--primary); color: white; }
+      .secondary { min-width: 96px; background: var(--secondary); color: var(--text); }
+      button:disabled { opacity: .7; cursor: wait; }
+      .status { min-height: 28px; margin-top: 18px; font-weight: 700; line-height: 1.4; }
+      .status.success { color: var(--primary-dark); }
+      .status.error { color: var(--danger); }
+      @media (max-width: 640px) {
+        .card { padding: 28px 18px 22px; }
+        .tabs { width: min(100%, 240px); }
+        .tab { flex: 1; min-width: 0; }
+        .actions { flex-direction: column; }
+        button[type="submit"], .secondary { width: 100%; }
       }
     </style>
   </head>
   <body>
-    <main>
+    <main class="card">
       <h1>Sun Fitness Xpert Gym Daily Attendance</h1>
-      <p class="intro">
-        Choose Entry or Exit, enter the member details, and save.
-      </p>
-      <p class="type-label">Select attendance type</p>
-
-      <div class="tabs" role="tablist" aria-label="Attendance type">
-        <button
-          class="tab"
-          id="entryTab"
-          type="button"
-          role="tab"
-          aria-selected="true"
-          aria-controls="entryPane"
-        >
-          Entry
-        </button>
-        <button
-          class="tab"
-          id="exitTab"
-          type="button"
-          role="tab"
-          aria-selected="false"
-          aria-controls="exitPane"
-        >
-          Exit
-        </button>
+      <p class="lead">Choose Entry or Exit, enter the member details, and save.</p>
+      <p class="choice-text">Select attendance type</p>
+      <div class="tabs-wrap">
+        <div class="tabs" role="tablist" aria-label="Attendance type">
+          <button class="tab active" type="button" data-tab="entry" role="tab" aria-selected="true">Entry</button>
+          <button class="tab" type="button" data-tab="exit" role="tab" aria-selected="false">Exit</button>
+        </div>
       </div>
 
-      <section
-        class="pane active"
-        id="entryPane"
-        role="tabpanel"
-        aria-labelledby="entryTab"
-      >
+      <section class="pane active" id="pane-entry">
         <form id="entryForm">
           <div class="field">
             <label for="entryName">Member Name</label>
-            <input
-              id="entryName"
-              name="name"
-              type="text"
-              autocomplete="name"
-              placeholder="Enter member name"
-              required
-            />
+            <input id="entryName" name="name" type="text" maxlength="120" placeholder="Enter member name" autocomplete="name" required />
           </div>
           <div class="field">
             <label for="entryMembership">Membership Number</label>
-            <input
-              id="entryMembership"
-              name="membershipNo"
-              type="text"
-              maxlength="5"
-              pattern="[A-Za-z]-[0-9]{1,3}"
-              title="Use one letter, a hyphen, and 1 to 3 digits (for example, B-07)."
-              autocapitalize="characters"
-              placeholder="e.g., B-07 or A-100"
-              required
-            />
+            <input id="entryMembership" name="membershipNo" type="text" maxlength="5" pattern="[A-Za-z]-[0-9]{1,3}" title="Use one letter, a hyphen, and 1 to 3 digits (for example, B-07)." autocapitalize="characters" placeholder="e.g., B-07" required />
           </div>
           <div class="actions">
-            <button class="submit" id="entrySubmit" type="submit">
-              Save Entry
-            </button>
-            <button class="clear" type="reset">Clear</button>
+            <button type="submit" id="entrySubmit">Save Entry</button>
+            <button type="button" class="secondary" id="entryReset">Clear</button>
           </div>
         </form>
       </section>
 
-      <section
-        class="pane"
-        id="exitPane"
-        role="tabpanel"
-        aria-labelledby="exitTab"
-      >
+      <section class="pane" id="pane-exit">
         <form id="exitForm">
           <div class="field">
             <label for="exitMembership">Membership Number</label>
-            <input
-              id="exitMembership"
-              name="membershipNo"
-              type="text"
-              maxlength="5"
-              pattern="[A-Za-z]-[0-9]{1,3}"
-              title="Use one letter, a hyphen, and 1 to 3 digits (for example, B-07)."
-              autocapitalize="characters"
-              placeholder="e.g., B-07 or A-100"
-              required
-            />
+            <input id="exitMembership" name="membershipNo" type="text" maxlength="5" pattern="[A-Za-z]-[0-9]{1,3}" title="Use one letter, a hyphen, and 1 to 3 digits (for example, B-07)." autocapitalize="characters" placeholder="e.g., B-07" required />
           </div>
           <div class="actions">
-            <button class="submit" id="exitSubmit" type="submit">
-              Save Exit
-            </button>
-            <button class="clear" type="reset">Clear</button>
+            <button type="submit" id="exitSubmit">Save Exit</button>
+            <button type="button" class="secondary" id="exitReset">Clear</button>
           </div>
         </form>
       </section>
-
-      <p id="status" role="status" aria-live="polite">
-        Please choose Entry or Exit to continue.
-      </p>
+      <div id="statusMessage" class="status" aria-live="polite"></div>
     </main>
 
     <script>
-      // Paste the deployed Apps Script Web App URL ending in /exec here.
-      const APPS_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbwJme2dfojW56MEQ256Wg9faBUvNGRb4eVkC9wgPKi5TMVUBgEs3670q46kD9KbxdSiig/exec";
+      const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJme2dfojW56MEQ256Wg9faBUvNGRb4eVkC9wgPKi5TMVUBgEs3670q46kD9KbxdSiig/exec";
+      const tabs = [...document.querySelectorAll(".tab")];
+      const panes = { entry: document.getElementById("pane-entry"), exit: document.getElementById("pane-exit") };
+      const entryForm = document.getElementById("entryForm");
+      const exitForm = document.getElementById("exitForm");
+      const statusMessage = document.getElementById("statusMessage");
 
-      const entryTab = document.getElementById("entryTab");
-      const exitTab = document.getElementById("exitTab");
-      const entryPane = document.getElementById("entryPane");
-      const exitPane = document.getElementById("exitPane");
-      const status = document.getElementById("status");
-
-      function setStatus(message, kind = "") {
-        status.textContent = message;
-        status.className = kind;
+      function setStatus(message, type = "") {
+        statusMessage.textContent = message;
+        statusMessage.className = `status ${type}`.trim();
       }
-
-      function switchTab(showEntry) {
-        entryTab.setAttribute("aria-selected", String(showEntry));
-        exitTab.setAttribute("aria-selected", String(!showEntry));
-        entryPane.classList.toggle("active", showEntry);
-        exitPane.classList.toggle("active", !showEntry);
+      function switchTab(name) {
+        tabs.forEach(button => {
+          const active = button.dataset.tab === name;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-selected", String(active));
+        });
+        Object.entries(panes).forEach(([key, pane]) => pane.classList.toggle("active", key === name));
         setStatus("");
-        document
-          .getElementById(showEntry ? "entryName" : "exitMembership")
-          .focus();
       }
-
-      entryTab.addEventListener("click", () => switchTab(true));
-      exitTab.addEventListener("click", () => switchTab(false));
-
-      async function submitAttendance(payload, button) {
-        if (!APPS_SCRIPT_URL) {
-          setStatus(
-            "Setup needed: add the deployed Apps Script URL in this file.",
-            "error",
-          );
-          return;
-        }
+      function requestId() {
+        return window.crypto && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      }
+      async function postData(payload) {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ ...payload, requestId: requestId() })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Unable to save attendance.");
+        return data;
+      }
+      async function submitForm(event, action, form, button, getPayload, progress) {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
         button.disabled = true;
-        setStatus(
-          payload.action === "entry" ? "Saving entry…" : "Saving exit…",
-        );
+        setStatus(progress);
         try {
-          const response = await fetch(APPS_SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload),
-          });
-          const result = await response.json();
-          if (!response.ok || !result.success) {
-            throw new Error(
-              result.message || `Request failed (HTTP ${response.status}).`,
-            );
-          }
-          document
-            .getElementById(
-              payload.action === "entry" ? "entryForm" : "exitForm",
-            )
-            .reset();
-          setStatus(result.message || "Attendance saved.", "success");
+          const result = await postData({ action, ...getPayload() });
+          form.reset();
+          setStatus(result.message || "Attendance saved successfully.", "success");
         } catch (error) {
-          setStatus(
-            error.message || "Could not contact the attendance service.",
-            "error",
-          );
+          setStatus(error.message || "Attendance could not be saved.", "error");
         } finally {
           button.disabled = false;
         }
       }
-
-      document
-        .getElementById("entryForm")
-        .addEventListener("submit", (event) => {
-          event.preventDefault();
-          const values = new FormData(event.currentTarget);
-          const name = String(values.get("name") || "").trim();
-          const membershipNo = String(values.get("membershipNo") || "").trim();
-          if (!name || !membershipNo) {
-            setStatus("Enter both member name and membership number.", "error");
-            return;
-          }
-          submitAttendance(
-            { action: "entry", name, membershipNo },
-            document.getElementById("entrySubmit"),
-          );
-        });
-
-      document
-        .getElementById("exitForm")
-        .addEventListener("submit", (event) => {
-          event.preventDefault();
-          const membershipNo = String(
-            new FormData(event.currentTarget).get("membershipNo") || "",
-          ).trim();
-          if (!membershipNo) {
-            setStatus("Enter the membership number for exit.", "error");
-            return;
-          }
-          submitAttendance(
-            { action: "exit", membershipNo },
-            document.getElementById("exitSubmit"),
-          );
-        });
-
-      document.querySelectorAll("form").forEach((form) => {
-        form.addEventListener("reset", () => setStatus(""));
-      });
+      entryForm.addEventListener("submit", event => submitForm(
+        event, "entry", entryForm, document.getElementById("entrySubmit"),
+        () => ({ name: entryForm.elements.name.value.trim(), membershipNo: entryForm.elements.membershipNo.value.trim() }),
+        "Saving entry..."
+      ));
+      exitForm.addEventListener("submit", event => submitForm(
+        event, "exit", exitForm, document.getElementById("exitSubmit"),
+        () => ({ membershipNo: exitForm.elements.membershipNo.value.trim() }),
+        "Saving exit..."
+      ));
+      document.getElementById("entryReset").addEventListener("click", () => { entryForm.reset(); setStatus(""); });
+      document.getElementById("exitReset").addEventListener("click", () => { exitForm.reset(); setStatus(""); });
+      tabs.forEach(button => button.addEventListener("click", () => switchTab(button.dataset.tab)));
     </script>
   </body>
 </html>
-
